@@ -1,7 +1,8 @@
 const {Responce} = require('../helper/sendResponce');
 const Todo = require("../model/todo");
+const mongoose = require('mongoose');
 
-// create a post
+// create a todo
 exports.createTodo = async(req, res) => {
     try {
         const {task} = req.body
@@ -16,9 +17,15 @@ exports.createTodo = async(req, res) => {
     }
 }
 
-//update a post 
+//update a todo 
 exports.updateTodo = async (req, res) => {
     try {
+
+          // Check if the provided ID is a valid ObjectId
+          if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return await Responce(res, 400, 'Invalid todo ID');
+        }
+
         const todoData = await Todo.findById(req.params.id);
         if (!todoData)  return await Responce(res, 400, 'No data found');
 
@@ -32,24 +39,30 @@ exports.updateTodo = async (req, res) => {
     }
 };
 
-// delete a post
-exports.deleteTodo = async(req, res) => {
+// delete a todo
+exports.deleteTodo = async (req, res) => {
     try {
-            const todo = await Todo.findById(req.params.id);
-            if(todo){
-                await todo.deleteOne();
-                return await Responce(res, 200 , 'Todo deleted successfully')
-            }else{
-                return await Responce(res, 404 , 'No todo found')
-            }
+        // Check if the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return await Responce(res, 400, 'Invalid todo ID');
+        }
+
+        const todo = await Todo.findById(req.params.id);
+
+        if (todo) {
+            await todo.deleteOne();
+            return await Responce(res, 200, 'Todo deleted successfully');
+        } else {
+            return await Responce(res, 404, 'No todo found');
+        }
     } catch (error) {
-        console.log(error)
-        return await Responce(res, 500 , 'something went wrong',error)
+        console.log(error);
+        return await Responce(res, 500, 'Something went wrong', error);
     }
-}
+};
 
 
-// get a post
+// get All Todo
 
 exports.getAllTodo = async(req, res) => {
     try {
@@ -62,8 +75,15 @@ exports.getAllTodo = async(req, res) => {
     }
 }
 
+//  get single todo
 exports.getTodo = async(req, res) => {
     try {
+
+        // Check if the provided ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return await Responce(res, 400, 'Invalid todo ID');
+        }
+
         const todo = await Todo.findById(req.params.id);
         if(!todo)  return await Responce(res, 400 , 'No data found')
         return await Responce(res, 200 , 'Todo fetched successfully', todo)

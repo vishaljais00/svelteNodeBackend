@@ -45,6 +45,15 @@ mongoose
 
 app.use('/api/todo', todoRoutes);
 
+// if no route found then return common responce 
+app.use((req, res, next) => {
+  return res.status(404).json({
+    status: 404,
+    message: 'Route not found',
+    data: null
+  });
+});
+
 
 
 

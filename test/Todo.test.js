@@ -56,8 +56,22 @@ describe('Todo API Endpoints', () => {
   // Test case for deleting a todo
   it('should delete a todo', async () => {
     const response = await request(app).delete(`/api/todo/${createdTodoId}`);
-
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message', 'Todo deleted successfully');
+  });
+
+  // Test case for deleting a todo
+  it('pass wroung ID ', async () => {
+    const response = await request(app).delete(`/api/todo/someWrongID`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('message', 'Invalid todo ID');
+  });
+
+  it('ment to get failed by path ', async () => {
+    const response = await request(app).delete(`/api/someWrongID`);
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('message', 'Route not found');
+
   });
 });
