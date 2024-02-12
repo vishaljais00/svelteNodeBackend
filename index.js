@@ -8,9 +8,6 @@ const cors = require('cors')
 const todoRoutes = require('./routes/todoRoutes')
 const gqlTodoRoutes = require('./routes/gqlTodoRoutes')
 const path = require('path')
-const prisma  = require('./prisma/client')
-// var { graphqlHTTP } = require("express-graphql")
-// var { buildSchema } = require("graphql")
 
 
 const app = express()
@@ -47,42 +44,6 @@ app.use(
 //middleware
 
 
-// var schema = buildSchema(`
-//     type Todo {
-//       task: String
-//       done: Boolean
-//       id: String
-//     }
-
-//     type Query {
-//       todos: [Todo]!
-//       todo(id: String!): Todo
-//     }
-// `)
-
-
-// const root = {
-//   todos: () => {
-//     return prisma.todos.findMany();
-//   },
-
-//   todo: ({ id }) => {
-//     return prisma.todos.findUnique({
-//       where: {
-//         id: id,
-//       },
-//     });
-//   },
-// };
-
-// app.use(
-//   '/api/gql',
-//   graphqlHTTP({
-//     schema: schema,
-//     rootValue: root,
-//     graphiql: true,
-//   })
-// );
 
 
 app.use('/api/todo', todoRoutes);
