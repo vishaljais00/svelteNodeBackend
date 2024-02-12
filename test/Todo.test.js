@@ -17,7 +17,7 @@ describe('Todo API Endpoints', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message', 'Todo created successfully');
-    createdTodoId = response.body.data._id; // Save the created todo ID for future tests
+    createdTodoId = response.body.data.id; // Save the created todo ID for future tests
   });
 
   // Test case for getting all todos
@@ -32,17 +32,16 @@ describe('Todo API Endpoints', () => {
   // Test case for getting a single todo
   it('should get a single todo', async () => {
     const response = await request(app).get(`/api/todo/${createdTodoId}`);
-
+    console.log(response.body)
+    expect(response.body.data.id).toBe(createdTodoId);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message', 'Todo fetched successfully');
-    expect(response.body.data._id).toBe(createdTodoId);
   });
 
   // Test case for updating a todo
   it('should update a todo', async () => {
     const updatedTodo = {
-      title: 'Updated Test Todo',
-      description: 'This is an updated test todo',
+      task: 'Updated Test Todo',
     };
 
     const response = await request(app)
@@ -65,7 +64,7 @@ describe('Todo API Endpoints', () => {
     const response = await request(app).delete(`/api/todo/someWrongID`);
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('message', 'Invalid todo ID');
+    expect(response.body).toHaveProperty('message', 'Invalid Id');
   });
 
   it('ment to get failed by path ', async () => {

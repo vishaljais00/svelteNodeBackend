@@ -1,0 +1,18 @@
+datasource db {
+  provider = "mongodb"
+  url      = "mongodb+srv://admin:adminadmin@cluster0.vpr1d.mongodb.net/svelteTodo?retryWrites=true&w=majority"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model todos {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  task     String    
+  done     Boolean    @default(false)
+}
+
+
+
+
