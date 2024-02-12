@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon index.js",
     "migrate": "prisma migrate dev --name init",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "@graphql-tools/schema": "^10.0.2",

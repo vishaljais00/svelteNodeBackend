@@ -5,7 +5,7 @@ const todoGQLController = require('../controller/gqlTodoController')
 
 router
     .route("/")
-        .get(todoGQLController.graphqlHandler)
+        .post(todoGQLController.graphqlHandler)
 
 
 module.exports = router

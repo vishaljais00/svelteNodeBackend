@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../index'); // Adjust the path accordingly
+const prisma = require('../prisma/client');
 
 describe('Todo API Endpoints', () => {
   // Dummy data for testing
@@ -29,14 +30,84 @@ describe('Todo API Endpoints', () => {
     expect(response.body.data).toBeInstanceOf(Array);
   });
 
+  // Test case for creating a todo
+  it('if no task present in create', async () => {
+    const response = await request(app)
+      .post('/api/todo')
+      .send({
+        notask: "dds"
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('message', 'No Task Found');
+  });
+
+  // Test case for getting all todos
+  it('should get all todos', async () => {
+    const response = await request(app).get('/api/todo');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'All todos fetched successfully');
+    expect(response.body.data).toBeInstanceOf(Array);
+  });
+
   // Test case for getting a single todo
   it('should get a single todo', async () => {
     const response = await request(app).get(`/api/todo/${createdTodoId}`);
-    console.log(response.body)
     expect(response.body.data.id).toBe(createdTodoId);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message', 'Todo fetched successfully');
   });
+
+  // Test case for getting all todos
+  it('should get all todos by gql', async () => {
+    const query = `
+        query {
+          todos {
+            task
+            done
+            id
+          }
+        }
+      `;
+
+    const response = await request(app)
+      .post('/api/gql')
+      .send({ query });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Todo Fetched Successfully');
+    expect(response.body.data).toBeInstanceOf(Array);
+  });
+
+
+
+  // Test case for getting single todos in gql
+  test('should get a single todo by ID in gql', async () => {
+    // Assuming you have a valid todo ID for testing
+    const todoId = createdTodoId
+
+    const query = `
+        query {
+          todoById(id: "${todoId}") {
+            task
+            done
+            id
+          }
+        }
+      `;
+
+    const response = await request(app)
+      .post('/api/gql')
+      .send({ query });
+
+    // Assertions
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Todo Fetched Successfully');
+    expect(response.body.data).toHaveProperty('id');
+    expect(response.body.data).toHaveProperty('id', todoId);
+
+  })
 
   // Test case for updating a todo
   it('should update a todo', async () => {
@@ -60,9 +131,64 @@ describe('Todo API Endpoints', () => {
   });
 
   // Test case for deleting a todo
-  it('pass wroung ID ', async () => {
+  it('pass wroung ID in deleting a todo ', async () => {
     const response = await request(app).delete(`/api/todo/someWrongID`);
 
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('message', 'Invalid Id');
+  });
+
+  // Test case for getting all todos
+  it('negitive case pass wrong filed all todos by gql', async () => {
+    const query = `
+          query {
+            todos {
+              task
+              done
+              id
+              ll
+            }
+          }
+        `;
+
+    const response = await request(app)
+      .post('/api/gql')
+      .send({ query });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('message');
+  });
+
+  // Assuming you have a invalid todo ID for testing
+  test('wrong ID todo  in gql', async () => {
+    const query = `
+        query {
+          todoById(id: "wrongID") {
+            task
+            done
+            id
+          }
+        }
+      `;
+
+    const response = await request(app)
+      .post('/api/gql')
+      .send({ query });
+
+    // Assertions
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('message', 'Invalid Id');
+  })
+  // Test case for update a todo
+  it('pass wroung ID  in update a todo', async () => {
+    const response = await request(app).put(`/api/todo/someWrongID`);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('message', 'Invalid Id');
+  });
+
+  // Test case for get  a todo
+  it('pass wroung ID for get a todo ', async () => {
+    const response = await request(app).get(`/api/todo/someWrongID`);
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('message', 'Invalid Id');
   });
@@ -73,4 +199,6 @@ describe('Todo API Endpoints', () => {
     expect(response.body).toHaveProperty('message', 'Route not found');
 
   });
+
+
 });

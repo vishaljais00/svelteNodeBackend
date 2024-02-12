@@ -13,8 +13,7 @@ exports.createTodo = async(req, res) => {
         return await Responce(res, 200 , 'Todo created successfully',saveTodo)
 
     } catch (error) {
-        console.log(error)
-        return await Responce(res, 500 , 'something went wrong',error)
+        return await Responce(res, 400 , 'something went wrong',null)
     }
 }
 
@@ -26,9 +25,7 @@ exports.updateTodo = async (req, res) => {
                 id: req.params.id
             }
         });
-        if (!todo) {
-            return await Responce(res, 400, 'Invalid Id');
-        }
+        
         await prisma.todos.update({
             data: req.body,
             where: {
@@ -42,22 +39,18 @@ exports.updateTodo = async (req, res) => {
             // Handle the specific ObjectID error
             return await Responce(res, 400, 'Invalid Id');
         }
-        return await Responce(res, 500, 'Error updating todo');
+        return await Responce(res, 400, 'Error updating todo');
     }
 };
 
 exports.deleteTodo = async (req, res) => {
     try {
         
-        const todo = await prisma.todos.findFirst({
+        await prisma.todos.findFirst({
             where: {
                 id: req.params.id
             }
-        });
-
-        if (!todo) {
-            return await Responce(res, 400, 'Invalid Id');
-        }
+        })
 
         await prisma.todos.delete({
             where: {
@@ -67,14 +60,13 @@ exports.deleteTodo = async (req, res) => {
 
         return await Responce(res, 200, 'Todo deleted successfully');
     } catch (error) {
-        console.log(error);
-
+       
         if (error instanceof PrismaClientKnownRequestError && error.code === "P2023") {
             // Handle the specific ObjectID error
             return await Responce(res, 400, 'Invalid Id');
         }
 
-        return await Responce(res, 500, 'Something went wrong', error);
+        return await Responce(res, 400, 'Something went wrong', error);
     }
 };
 
@@ -86,8 +78,7 @@ exports.getAllTodo = async(req, res) => {
         if(todoList.length > 0) return await Responce(res, 200 , 'All todos fetched successfully', todoList)
         return await Responce(res, 200 , 'No Data Found', [])
     } catch (error) {
-        console.log(error)
-        return await Responce(res, 500 , 'something went wrong',error)
+        return await Responce(res, 400 , 'something went wrong',error)
     }
 }
 
@@ -99,32 +90,14 @@ exports.getTodo = async(req, res) => {
                 id: req.params.id
             }
         });
-        if (!todo)  return await Responce(res, 400, 'No todo found');
         return await Responce(res, 200 , 'Todo fetched successfully', todo)
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError && error.code === "P2023") {
             // Handle the specific ObjectID error
             return await Responce(res, 400, 'Invalid Id');
         }
-        return await Responce(res, 500 , 'something went wrong',error)
+        return await Responce(res, 400 , 'something went wrong',error)
     }
 }
 
-exports.getGraphFunction = async(req, res) => {
-    try {
-        const todo = await prisma.todos.findFirst({
-            where: {
-                id: req.params.id
-            }
-        });
-        if (!todo)  return await Responce(res, 400, 'No todo found');
-        return await Responce(res, 200 , 'Todo fetched successfully', todo)
-    } catch (error) {
-        if (error instanceof PrismaClientKnownRequestError && error.code === "P2023") {
-            // Handle the specific ObjectID error
-            return await Responce(res, 400, 'Invalid Id');
-        }
-        return await Responce(res, 500 , 'something went wrong',error)
-    }
-}
 
